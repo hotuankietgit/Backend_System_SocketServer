@@ -7,20 +7,20 @@ const io = require('socket.io')(server, {cors: "*"})
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.ACCESS_TOKEN_SECRET;
 
-io.use((socket, next) => {
-    const {token} = socket.handshake.headers;
+// io.use((socket, next) => {
+//     const {token} = socket.handshake.headers;
     
-    if (!token){
-        next(new Error("Access Token is not provided"));
-    }
+//     if (!token){
+//         next(new Error("Access Token is not provided"));
+//     }
     
-    try {
-        jwt.verify(token, secretKey);
-        next();
-    } catch {
-        next(new Error("Access Denied"));
-    }
-})
+//     try {
+//         jwt.verify(token, secretKey);
+//         next();
+//     } catch {
+//         next(new Error("Access Denied"));
+//     }
+// })
 
 io.on('connection', (socket) =>{
 
@@ -63,12 +63,14 @@ io.on('connection', (socket) =>{
     // })
 
     //Test attendance form for socket
-    socket.on("sendAttendanceForm", (attendaceForm) => {
+    socket.on("sendAttendanceForm", (attendanceForm) => {
         //Send to all students that is in classID
-        socket.to(attendaceForm.classes).emit("getAttendanceForm", attendaceForm);
+        console.log("Teacher send attendanceForm with class Room", attendanceForm.classes);
+        socket.to(attendanceForm.classes).emit("getAttendanceForm", attendanceForm);
     })
 
     socket.on("joinClassRoom", async (info) => {
+        console.log("User join class room: ", info.classRoom)
         socket.join(info.classRoom);
     })
 })
