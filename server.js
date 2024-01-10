@@ -36,15 +36,10 @@ io.on('connection', (socket) =>{
         //socket.to(info.roomName).emit("numberPeople", size, users);
     })
 
-    socket.on("joinClassRoom", async (info) => {
-        socket.name = info.userName;
-        socket.join(info.classRoom);
-    })
-
-    socket.on("sendAttendanceForm", async (info) => {
-        socket.name = info.userName;
-        socket.to(info.classRoom).emit("receiveAttendanceForm", info.attendaceForm)
-    })
+    // socket.on("sendAttendanceForm", async (info) => {
+    //     socket.name = info.userName;
+    //     socket.to(info.classRoom).emit("receiveAttendanceForm", info.attendaceForm)
+    // })
 
     // socket.on("call", info => {
     //     var object = {streamId: info.streamId, username: info.username}
@@ -66,6 +61,16 @@ io.on('connection', (socket) =>{
     // socket.on('message', info => {
     //     socket.to(info.classRoom).emit('userMessage', info);
     // })
+
+    //Test attendance form for socket
+    socket.on("sendAttendanceForm", (attendaceForm) => {
+        //Send to all students that is in classID
+        socket.to(attendaceForm.classes).emit("getAttendanceForm", attendaceForm);
+    })
+
+    socket.on("joinClassRoom", async (info) => {
+        socket.join(info.classRoom);
+    })
 })
 
 server.listen(9000)
