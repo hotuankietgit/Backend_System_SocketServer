@@ -5,6 +5,7 @@ const cors = require("cors");
 const server = require('http').Server(app)
 const io = require('socket.io')(server, {cors: "*"})
 const jwt = require("jsonwebtoken");
+const { Console } = require('console');
 const secretKey = process.env.ACCESS_TOKEN_SECRET;
 
 // io.use((socket, next) => {
@@ -23,7 +24,7 @@ const secretKey = process.env.ACCESS_TOKEN_SECRET;
 // })
 
 io.on('connection', (socket) =>{
-
+    console.log('user connected');
     socket.on("takeAttendance", async (info) => {
         socket.name = info.userName;
         socket.to(info.classRoom).emit("studentJoin", info);
@@ -66,13 +67,22 @@ io.on('connection', (socket) =>{
     socket.on("sendAttendanceForm", (attendanceForm) => {
         //Send to all students that is in classID
         console.log("Teacher send attendanceForm with class Room", attendanceForm.classes);
-        socket.to(attendanceForm.classes).emit("getAttendanceForm", attendanceForm);
+        socket.to(attendanceForm.classes).emit("getAttendanceForm", JSON.stringify(attendanceForm));
     })
 
     socket.on("joinClassRoom", async (info) => {
+        if (typeof info === 'string') {
+            try {
+                info = JSON.parse(info);
+                console.log("Converted info to JSON: ", info);
+            } catch (error) {
+                console.error("Error parsing info as JSON: ", error);
+            }
+        }
         console.log("User join class room: ", info.classRoom)
         socket.join(info.classRoom);
     })
+    socket.on('disconnect', (data) => console.log('User disconnected ',data));
 })
 
-server.listen(9000)
+server.listen(9000, () => console.log('listening on *:9000'));
