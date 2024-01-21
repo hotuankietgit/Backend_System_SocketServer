@@ -66,7 +66,16 @@ io.on('connection', (socket) =>{
     //Test attendance form for socket
     socket.on("sendAttendanceForm", (attendanceForm) => {
         //Send to all students that is in classID
+        if (typeof attendanceForm === 'string'){
+            try {
+                attendanceForm = JSON.parse(attendanceForm);
+                console.log("Converted attendanceForm to JSON: ", attendanceForm);
+            } catch (error) {
+                console.error("Error parsing info as JSON: ", error);
+            }
+        }
         console.log("Teacher send attendanceForm with class Room", attendanceForm.classes);
+        
         socket.to(attendanceForm.classes).emit("getAttendanceForm", JSON.stringify(attendanceForm));
     })
 
