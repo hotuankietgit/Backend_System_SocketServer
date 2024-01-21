@@ -70,7 +70,7 @@ io.on('connection', (socket) =>{
         socket.to(attendanceForm.classes).emit("getAttendanceForm", JSON.stringify(attendanceForm));
     })
 
-    socket.on("joinClassRoom", async (info) => {
+    socket.on("joinClassRoom", (info) => {
         if (typeof info === 'string') {
             try {
                 info = JSON.parse(info);
@@ -82,6 +82,11 @@ io.on('connection', (socket) =>{
         console.log("User join class room: ", info.classRoom)
         socket.join(info.classRoom);
     })
+
+    socket.on("sendAttendanceDetail", (attendanceDetail) => {
+        socket.to(attendanceDetail.classDetail).emit("getAttendanceDetail", JSON.stringify(attendanceDetail))
+    })
+
     socket.on('disconnect', (data) => console.log('User disconnected ',data));
 })
 
