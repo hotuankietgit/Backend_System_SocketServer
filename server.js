@@ -25,17 +25,17 @@ const secretKey = process.env.ACCESS_TOKEN_SECRET;
 
 io.on('connection', (socket) =>{
     console.log('user connected');
-    socket.on("takeAttendance", async (info) => {
-        socket.name = info.userName;
-        socket.to(info.classRoom).emit("studentJoin", info);
+    // socket.on("takeAttendance", async (info) => {
+    //     socket.name = info.userName;
+    //     socket.to(info.classRoom).emit("studentJoin", info);
         
-        // var size = io.of('/').adapter.rooms.get(info.classRoom).size;
-        // var people = await io.in(info.classRoom).fetchSockets()
-        // var users = people.map(socket => ({name: socket.name}))
+    //     // var size = io.of('/').adapter.rooms.get(info.classRoom).size;
+    //     // var people = await io.in(info.classRoom).fetchSockets()
+    //     // var users = people.map(socket => ({name: socket.name}))
         
-        //socket.emit("numberPeople", size, users);
-        //socket.to(info.roomName).emit("numberPeople", size, users);
-    })
+    //     //socket.emit("numberPeople", size, users);
+    //     //socket.to(info.roomName).emit("numberPeople", size, users);
+    // })
 
     // socket.on("sendAttendanceForm", async (info) => {
     //     socket.name = info.userName;
@@ -79,6 +79,22 @@ io.on('connection', (socket) =>{
         socket.to(attendanceForm.classes).emit("getAttendanceForm", JSON.stringify(attendanceForm));
     })
 
+    socket.on("takeAttendance", async (attendance) => {
+        if (typeof attendance === 'string'){
+            try {
+                attendance = JSON.parse(attendance);
+                console.log("Converted Take Attendance To Json", attendance)
+            } catch (error) {
+                console.error(
+                    "Error Parsing takeAttendance As JSON : ", error
+                )
+            }
+        }
+        console.log(`Student ${attendance.studentID} send attendanceForm with class Room `, attendance.classID);
+        
+        socket.to(attendance.classID).emit("getTakeAttendance", JSON.stringify(attendance));
+    })
+
     socket.on("joinClassRoom", async (info) => {
         if (typeof info === 'string') {
             try {
@@ -95,3 +111,8 @@ io.on('connection', (socket) =>{
 })
 
 server.listen(9000, () => console.log('listening on *:9000'));
+
+
+
+
+
