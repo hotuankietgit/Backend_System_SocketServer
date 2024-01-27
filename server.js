@@ -107,6 +107,11 @@ io.on('connection', (socket) =>{
         console.log("User join class room: ", info.classRoom)
         socket.join(info.classRoom);
     })
+
+    // socket.on("sendAttendanceDetail", (attendanceDetail) => {
+    //     socket.to(attendanceDetail.classDetail).emit("getAttendanceDetail", JSON.stringify(attendanceDetail))
+    // })
+
     socket.on('disconnect', (data) => console.log('User disconnected ',data));
 })
 
