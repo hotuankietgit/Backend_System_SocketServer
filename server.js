@@ -25,6 +25,11 @@ const secretKey = process.env.ACCESS_TOKEN_SECRET;
 
 io.on('connection', (socket) =>{
     console.log('user connected');
+    socket.on("testClient", (info) => {
+        console.log(info.dinosaur);
+        console.log(typeof info);
+        socket.broadcast.emit("testServer", JSON.stringify(info));
+    })
     // socket.on("takeAttendance", async (info) => {
     //     socket.name = info.userName;
     //     socket.to(info.classRoom).emit("studentJoin", info);
@@ -90,9 +95,9 @@ io.on('connection', (socket) =>{
                 )
             }
         }
-        console.log(`Student ${attendance.studentID} send attendanceForm with class Room `, attendance.classID);
+        console.log(`Student ${attendance.studentID} send attendanceForm with class Room `, attendance.classDetail);
         
-        socket.to(attendance.classID).emit("getTakeAttendance", JSON.stringify(attendance));
+        socket.to(attendance.classDetail).emit("getTakeAttendance", JSON.stringify(attendance));
     })
 
     socket.on("joinClassRoom", async (info) => {
